@@ -4,7 +4,7 @@
 Vagrant.configure(2) do |config|
   config.vm.box = "ubuntu/trusty64"
   host_port = ENV["GIRDER_HOST_PORT"] || 8080
-  sync_folders = ENV["DEVELOPMENT_SYNC_FOLDERS"] || false
+  sync_folders = true # ENV["DEVELOPMENT_SYNC_FOLDERS"] || false
 
   config.vm.network "forwarded_port", guest: 8080, host: host_port
 
@@ -61,7 +61,8 @@ Vagrant.configure(2) do |config|
       "all" => ['gaiavagrant'],
       "girder" => ['gaiavagrant'],
       "mongo" => ['gaiavagrant'],
-      "rabbitmq" => ['gaiavagrant']
+      "rabbitmq" => ['gaiavagrant'],
+      "postgis" => ['gaiavagrant']
     }
 
     ansible.extra_vars = {

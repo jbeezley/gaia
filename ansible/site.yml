@@ -10,6 +10,13 @@
     - role: rabbitmq
       state: started
 
+- hosts: postgis
+  sudo: yes
+  roles:
+    - role: zzet.postgresql
+  vars:
+    pg_postgis: true
+
 - hosts: girder
   vars:
     base_dir: /opt
@@ -55,11 +62,26 @@
       with_items:
         - python-dev
         - libgdal-dev
+        - liblapack-dev
+        - gfortran
       become: yes
 
     - name: Install Gaia as a plugin
       shell: >
         . {{venv_root}}/bin/activate && girder-install plugin -s -f {{base_dir}}/gaia
+      become: yes
+      become_user: "{{girder_user}}"
+      environment:
+        CPLUS_INCLUDE_PATH: /usr/include/gdal
+        C_INCLUDE_PATH: /usr/include/gdal
+      tags:
+        - gaia
+
+    - name: Install Gaia as a library
+      shell: >
+        . {{venv_root}}/bin/activate && python setup.py develop
+      args:
+        chdir: "{{base_dir}}/gaia"
       become: yes
       become_user: "{{girder_user}}"
       environment:
